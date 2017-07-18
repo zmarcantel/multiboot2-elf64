@@ -6,7 +6,7 @@ use header::{Tag, TagIter};
 pub use boot_loader_name::BootLoaderNameTag;
 pub use elf_sections::{ElfSectionsTag, ElfSection, ElfSectionIter, ElfSectionType, ElfSectionFlags, StringTable};
 pub use elf_sections::{ELF_SECTION_WRITABLE, ELF_SECTION_ALLOCATED, ELF_SECTION_EXECUTABLE};
-pub use memory_map::{MemoryMapTag, MemoryArea, MemoryAreaIter};
+pub use memory_map::{MemoryMapTag, MemoryArea, MemoryAreaType, MemoryAreaIter};
 pub use module::{ModuleTag, ModuleIter};
 pub use command_line::CommandLineTag;
 

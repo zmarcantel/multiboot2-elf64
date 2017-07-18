@@ -1,3 +1,5 @@
+extern crate core;
+
 #[derive(Debug)]
 #[repr(C)]
 pub struct MemoryMapTag {
@@ -20,12 +22,37 @@ impl MemoryMapTag {
     }
 }
 
+#[repr(u32)]
+#[derive(Clone, PartialEq)]
+// Multiboot Specification version 1.6 -- Page 12
+// http://nongnu.askapache.com/grub/phcoder/multiboot.pdf
+pub enum MemoryAreaType {
+    Usable           = 1,
+    ACPI             = 3,
+    HibernatePersist = 4,
+}
+impl core::fmt::Debug for MemoryAreaType {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        match *self {
+            MemoryAreaType::Usable             => { write!(f, "Usable")  }
+            MemoryAreaType::ACPI               => { write!(f, "ACPI")    }
+            MemoryAreaType::HibernatePersist   => { write!(f, "HibPers") }
+        }
+    }
+}
+impl core::fmt::Display for MemoryAreaType {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
+
 #[derive(Debug)]
 #[repr(C)]
 pub struct MemoryArea {
     base_addr: u64,
     length: u64,
-    typ: u32,
+    typ: MemoryAreaType,
     _reserved: u32,
 }
 
@@ -40,6 +67,10 @@ impl MemoryArea {
 
     pub fn size(&self) -> usize {
         self.length as usize
+    }
+
+    pub fn area_type(&self) -> MemoryAreaType {
+        self.typ.clone()
     }
 }
 
@@ -58,9 +89,7 @@ impl Iterator for MemoryAreaIter {
         } else {
             let area = unsafe{&*(self.current_area as *const MemoryArea)};
             self.current_area = self.current_area + (self.entry_size as u64);
-            if area.typ == 1 {
-                Some(area)
-            } else {self.next()}
+            Some(area)
         }
     }
 }
